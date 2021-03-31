@@ -11,15 +11,13 @@ module.exports = function (passport) {
         },
         function (email, password, done) {
 
-            mysalt = bcrypt.genSaltSync(10);
-            myhash = bcrypt.hashSync(password, mysalt);
-
             User.findOne({
                 email: email
-            }).then(user => {
+            }).then(async(user)=> {
+                console.log(user);
                 if (user) {
-                    if (bcrypt.compare(myhash, user.password)) {
-                        console.log(myhash, "  = ", user.password);
+                    if (await bcrypt.compare(password, user.password)) {
+                        console.log(password, "  = ", user.password);
                         return done(null, user);
                        
                     } else {
@@ -32,7 +30,9 @@ module.exports = function (passport) {
                         message: "Email Anda Tidak Terdaftar"
                     });
                 }
-            });
+            }).catch(e => {
+                console.log('There has been a problem with your fetch operation: ' + e.message);
+              });
 
         }
     ));
